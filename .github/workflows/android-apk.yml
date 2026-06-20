@@ -19,8 +19,8 @@ jobs:
     name: Build GridKing APK and publish release
     runs-on: ubuntu-latest
     env:
-      GRIDKING_API_URL: ${{ vars.GRIDKING_API_URL }}
-      GRIDKING_WS_URL: ${{ vars.GRIDKING_WS_URL }}
+      GRIDKING_API_URL: ${{ vars.GRIDKING_API_URL || secrets.GRIDKING_API_URL }}
+      GRIDKING_WS_URL: ${{ vars.GRIDKING_WS_URL || secrets.GRIDKING_WS_URL }}
 
     steps:
       - name: Check out repository
@@ -42,6 +42,26 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: Validate production configuration
+        shell: bash
+        run: |
+          if [[ -z "$GRIDKING_API_URL" ]]; then
+            echo "::error::GRIDKING_API_URL is missing. Add it to the GridKing-Frontend repository under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          if [[ -z "$GRIDKING_WS_URL" ]]; then
+            echo "::error::GRIDKING_WS_URL is missing. Add it to the GridKing-Frontend repository under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          if [[ "$GRIDKING_API_URL" != https://* ]]; then
+            echo "::error::GRIDKING_API_URL must start with https://"
+            exit 1
+          fi
+          if [[ "$GRIDKING_WS_URL" != wss://* ]]; then
+            echo "::error::GRIDKING_WS_URL must start with wss://"
+            exit 1
+          fi
 
       - name: Generate GridKing assets
         run: npm run assets
