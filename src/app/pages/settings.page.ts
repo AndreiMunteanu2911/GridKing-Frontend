@@ -1,20 +1,39 @@
 import { Component } from '@angular/core';
-import { PageHeaderComponent } from '../shared/page-header.component';
+import { Router } from '@angular/router';
+import { AuthService } from '../core/auth.service';
 import { SettingsService } from '../core/settings.service';
+import { SoundService } from '../core/sound.service';
+import { AppShellComponent } from '../shared/app-shell.component';
+import { ButtonComponent } from '../shared/button.component';
+import { PanelComponent } from '../shared/panel.component';
+import { SettingToggleComponent } from '../shared/setting-toggle.component';
 
 @Component({
   selector: 'app-settings-page',
-  imports: [PageHeaderComponent],
+  imports: [AppShellComponent, ButtonComponent, PanelComponent, SettingToggleComponent],
   template: `
-    <main class="min-h-dvh"><app-page-header title="Settings" />
-      <section class="mx-auto max-w-xl px-5">
-        <div class="game-card space-y-4">
-          <button class="setting-row" (click)="settings.darkMode.update(value => !value)"><span><strong>Dark mode</strong><small>Use a deeper nighttime palette</small></span><span class="toggle" [class.toggle-on]="settings.darkMode()"><i></i></span></button>
-          <button class="setting-row" (click)="settings.muted.update(value => !value)"><span><strong>Mute sound</strong><small>Silence moves and match effects</small></span><span class="toggle" [class.toggle-on]="settings.muted()"><i></i></span></button>
-        </div>
-        <p class="mt-5 text-center text-sm font-semibold text-emerald-800/60 dark:text-emerald-100/60">Preferences are saved on this device.</p>
+    <app-shell title="Settings" subtitle="Make GridKing feel right on this device">
+      <section class="max-w-2xl">
+        <app-panel><div class="space-y-4">
+          <app-setting-toggle title="Dark mode" description="Use a deeper nighttime palette" [enabled]="settings.darkMode()" (toggled)="settings.darkMode.update(value => !value)" />
+          <app-setting-toggle title="Game sounds" description="Moves, matchmaking, and result effects" [enabled]="!settings.muted()" (toggled)="toggleSound()" />
+        </div></app-panel>
+        <p class="mt-4 text-sm font-semibold text-emerald-800/60 dark:text-emerald-100/60">Preferences are saved on this device. Enabling sound plays a short preview.</p>
+        <app-button class="mt-8" variant="danger" (pressed)="logout()">Log out</app-button>
       </section>
-    </main>
+    </app-shell>
   `,
 })
-export class SettingsPage { constructor(readonly settings: SettingsService) {} }
+export class SettingsPage {
+  constructor(readonly settings: SettingsService, private readonly sounds: SoundService, private readonly auth: AuthService, private readonly router: Router) {}
+
+  toggleSound(): void {
+    this.settings.muted.update((value) => !value);
+    if (!this.settings.muted()) this.sounds.match();
+  }
+
+  async logout(): Promise<void> {
+    await this.auth.logout();
+    await this.router.navigateByUrl('/auth');
+  }
+}

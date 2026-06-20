@@ -1,5 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { Color, GameState, Move } from '../core/models';
+import { SoundService } from '../core/sound.service';
 
 @Component({
   selector: 'app-board',
@@ -20,7 +21,7 @@ import { Color, GameState, Move } from '../core/models';
         >
           @if (state().board[index]; as piece) {
             <span class="piece" [class.red-piece]="piece === 1 || piece === 3" [class.black-piece]="piece === 2 || piece === 4">
-              @if (piece === 3 || piece === 4) { <span class="crown">♛</span> }
+              @if (piece === 3 || piece === 4) { <span class="crown">&#9819;</span> }
             </span>
           }
         </button>
@@ -48,10 +49,15 @@ export class BoardComponent {
       .filter((value): value is number => value !== undefined);
   });
 
+  constructor(private readonly sounds: SoundService) {}
+
   select(index: number): void {
     const current = this.selectedPath();
     if (!current.length) {
-      if (this.legalMoves().some((move) => move.path[0] === index)) this.selectedPath.set([index]);
+      if (this.legalMoves().some((move) => move.path[0] === index)) {
+        this.selectedPath.set([index]);
+        this.sounds.select();
+      }
       return;
     }
     if (!this.nextTargets().includes(index)) {
@@ -63,6 +69,7 @@ export class BoardComponent {
     const longer = this.legalMoves().some((move) => move.path.length > next.length && next.every((square, i) => move.path[i] === square));
     if (exact && !longer) {
       this.selectedPath.set([]);
+      this.sounds.move();
       this.move.emit(exact);
     } else {
       this.selectedPath.set(next);

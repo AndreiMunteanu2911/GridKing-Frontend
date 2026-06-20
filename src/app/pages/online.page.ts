@@ -1,56 +1,52 @@
-import { Component, OnDestroy, computed, signal } from '@angular/core';
-import { PageHeaderComponent } from '../shared/page-header.component';
-import { BoardComponent } from '../shared/board.component';
+import { Component, OnDestroy, computed } from '@angular/core';
 import { MatchService } from '../core/match.service';
 import { Move, QueueMode } from '../core/models';
+import { AppShellComponent } from '../shared/app-shell.component';
+import { BoardComponent } from '../shared/board.component';
+import { ButtonComponent } from '../shared/button.component';
+import { ChoiceCardComponent } from '../shared/choice-card.component';
+import { PanelComponent } from '../shared/panel.component';
+import { PlayerStripComponent } from '../shared/player-strip.component';
+import { SectionHeadingComponent } from '../shared/section-heading.component';
+import { ErrorMessageComponent } from '../shared/error-message.component';
 
 @Component({
   selector: 'app-online-page',
-  imports: [PageHeaderComponent, BoardComponent],
+  imports: [AppShellComponent, BoardComponent, ButtonComponent, ChoiceCardComponent, PanelComponent, PlayerStripComponent, SectionHeadingComponent, ErrorMessageComponent],
   template: `
-    <main class="min-h-dvh pb-10">
-      <app-page-header title="Play Online" />
-      <section class="mx-auto max-w-5xl px-5">
-        @if (match.status() === 'idle') {
-          <div class="mx-auto max-w-xl text-center">
-            <p class="eyebrow">Choose your arena</p>
-            <h2 class="section-title">Find your next rival</h2>
-            <div class="mt-8 grid gap-5 sm:grid-cols-2">
-              <button class="game-card mode-card" (click)="queue('casual')"><span class="text-5xl">☘</span><strong>Casual</strong><small>Relaxed matches with no MMR changes</small></button>
-              <button class="game-card mode-card border-yellow-400" (click)="queue('ranked')"><span class="text-5xl">♛</span><strong>Ranked</strong><small>Compete for your place on the leaderboard</small></button>
-            </div>
+    <app-shell title="Play Online" subtitle="Find an opponent and climb the rankings">
+      @if (match.status() === 'idle') {
+        <div class="mx-auto max-w-2xl text-center">
+          <app-section-heading eyebrow="Choose your arena" title="Find your next rival" [centered]="true" />
+          <div class="grid gap-5 sm:grid-cols-2">
+            <app-choice-card icon="&#9673;" title="Casual" description="Relaxed matches with no rating changes" (chosen)="queue('casual')" />
+            <app-choice-card icon="&#9819;" title="Ranked" description="Compete for your leaderboard position" [selected]="true" (chosen)="queue('ranked')" />
           </div>
-        } @else if (match.status() === 'connecting' || match.status() === 'queued') {
-          <div class="game-card mx-auto max-w-md text-center">
-            <div class="mx-auto mb-5 h-16 w-16 animate-spin rounded-full border-8 border-emerald-100 border-t-yellow-400"></div>
-            <h2 class="section-title">Searching…</h2>
-            <p class="mt-2 font-semibold text-emerald-800/70 dark:text-emerald-100/70">Finding a worthy opponent</p>
-            <button class="soft-button mt-6" (click)="match.close()">Cancel</button>
+        </div>
+      } @else if (match.status() === 'connecting' || match.status() === 'queued') {
+        <app-panel class="mx-auto max-w-md text-center">
+          <div class="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-8 border-emerald-100 border-t-yellow-400"></div>
+          <h2 class="text-3xl font-black text-emerald-950 dark:text-white">Searching...</h2>
+          <p class="mt-2 font-semibold text-emerald-800/70 dark:text-emerald-100/70">Finding a worthy opponent</p>
+          <app-button class="mt-6" variant="secondary" (pressed)="match.close()">Cancel</app-button>
+        </app-panel>
+      } @else if (match.state(); as state) {
+        <div class="grid items-start gap-7 xl:grid-cols-[minmax(0,46rem)_19rem] xl:justify-center">
+          <div class="mx-auto w-full max-w-[46rem]">
+            <app-player-strip class="mb-3" [avatar]="(match.opponent()?.visible_name || 'O').charAt(0)" label="Opponent" [name]="match.opponent()?.visible_name || 'Opponent'" [rating]="match.opponent()?.mmr || 1200" />
+            <app-board [state]="state" [legalMoves]="match.legalMoves()" [playerColor]="match.color() || 1" [disabled]="!isMyTurn() || match.status() === 'finished'" (move)="play($event)" />
           </div>
-        } @else if (match.state(); as state) {
-          <div class="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_18rem]">
-            <div class="mx-auto w-full max-w-[42rem]">
-              <div class="mb-4 flex items-center justify-between rounded-2xl bg-emerald-950 px-4 py-3 text-white">
-                <span><small class="block text-xs uppercase tracking-widest text-emerald-300">Opponent</small><strong>{{ match.opponent()?.visible_name || 'Opponent' }}</strong></span>
-                <span class="rounded-full bg-yellow-300 px-3 py-1 font-black text-emerald-950">{{ match.opponent()?.mmr }} MMR</span>
-              </div>
-              <app-board [state]="state" [legalMoves]="match.legalMoves()" [playerColor]="match.color() || 1" [disabled]="!isMyTurn() || match.status() === 'finished'" (move)="play($event)" />
-            </div>
-            <aside class="game-card">
-              <p class="eyebrow">Match status</p>
-              <h2 class="mt-2 text-2xl font-black text-emerald-950 dark:text-white">{{ statusText() }}</h2>
-              <p class="mt-3 text-sm font-semibold text-emerald-800/70 dark:text-emerald-100/70">{{ state.reason ? reasonText(state.reason) : 'Mandatory captures are highlighted. Complete every jump in the sequence.' }}</p>
-              @if (match.error()) { <p class="mt-4 rounded-xl bg-red-100 p-3 text-sm font-bold text-red-800">{{ match.error() }}</p> }
-              @if (match.status() === 'finished') {
-                <button class="arcade-button mt-6 w-full" (click)="match.close()">Find another match</button>
-              } @else {
-                <button class="soft-button mt-6 w-full" (click)="match.resign()">Resign match</button>
-              }
-            </aside>
-          </div>
-        }
-      </section>
-    </main>
+          <app-panel class="game-panel">
+            <p class="eyebrow">Match status</p>
+            <h2 class="mt-2 text-2xl font-black text-emerald-950 dark:text-white">{{ statusText() }}</h2>
+            <p class="mt-3 text-sm font-semibold text-emerald-800/70 dark:text-emerald-100/70">{{ state.reason ? reasonText(state.reason) : 'Select a piece, then a highlighted square. Captures are mandatory.' }}</p>
+            <app-error-message [message]="match.error()" />
+            @if (match.status() === 'finished') { <app-button class="mt-6" [fullWidth]="true" (pressed)="match.close()">Find another match</app-button> }
+            @else { <app-button class="mt-6" variant="danger" [fullWidth]="true" (pressed)="match.resign()">Resign match</app-button> }
+          </app-panel>
+        </div>
+      }
+    </app-shell>
   `,
 })
 export class OnlinePage implements OnDestroy {
@@ -62,9 +58,7 @@ export class OnlinePage implements OnDestroy {
   });
 
   constructor(readonly match: MatchService) {}
-  queue(mode: QueueMode): void {
-    this.match.connect(mode).catch((error) => this.match.error.set(error instanceof Error ? error.message : 'Connection failed.'));
-  }
+  queue(mode: QueueMode): void { this.match.connect(mode).catch((error) => this.match.error.set(error instanceof Error ? error.message : 'Connection failed.')); }
   play(move: Move): void { this.match.move(move); }
   reasonText(reason: string): string { return reason.replaceAll('_', ' '); }
   ngOnDestroy(): void { this.match.close(); }

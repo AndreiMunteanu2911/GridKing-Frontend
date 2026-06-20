@@ -1,49 +1,52 @@
 import { Component, computed, signal } from '@angular/core';
 import { ApiService } from '../core/api.service';
 import { Color, Difficulty, GamePayload, GameState, Move } from '../core/models';
+import { SoundService } from '../core/sound.service';
+import { AppShellComponent } from '../shared/app-shell.component';
 import { BoardComponent } from '../shared/board.component';
-import { PageHeaderComponent } from '../shared/page-header.component';
+import { ButtonComponent } from '../shared/button.component';
+import { ChoiceCardComponent } from '../shared/choice-card.component';
+import { PanelComponent } from '../shared/panel.component';
+import { PlayerStripComponent } from '../shared/player-strip.component';
+import { SectionHeadingComponent } from '../shared/section-heading.component';
+import { ErrorMessageComponent } from '../shared/error-message.component';
 
 @Component({
   selector: 'app-bot-page',
-  imports: [BoardComponent, PageHeaderComponent],
+  imports: [BoardComponent, AppShellComponent, ButtonComponent, ChoiceCardComponent, PanelComponent, PlayerStripComponent, SectionHeadingComponent, ErrorMessageComponent],
   template: `
-    <main class="min-h-dvh pb-10">
-      <app-page-header title="Play Bot" />
-      <section class="mx-auto max-w-5xl px-5">
-        @if (!state()) {
-          <div class="mx-auto max-w-2xl text-center">
-            <p class="eyebrow">Training ground</p><h2 class="section-title">Select difficulty</h2>
-            <div class="mt-7 grid gap-4 sm:grid-cols-3">
-              @for (level of levels; track level.value) {
-                <button class="game-card mode-card" [class.border-yellow-400]="difficulty() === level.value" (click)="difficulty.set(level.value)">
-                  <span class="text-4xl">{{ level.icon }}</span><strong>{{ level.label }}</strong><small>{{ level.detail }}</small>
-                </button>
-              }
-            </div>
-            <p class="mb-3 mt-7 font-black text-emerald-950 dark:text-white">Play as</p>
-            <div class="mx-auto mb-7 flex max-w-xs rounded-2xl bg-emerald-100 p-1 dark:bg-emerald-950">
-              <button class="tab-button" [class.active-tab]="color() === 1" (click)="color.set(1)">Red · First</button>
-              <button class="tab-button" [class.active-tab]="color() === 2" (click)="color.set(2)">Black</button>
-            </div>
-            <button class="arcade-button px-12" (click)="start()" [disabled]="busy()">Start game</button>
+    <app-shell title="Play Bot" subtitle="Practice tactics at your own pace">
+      @if (!state()) {
+        <div class="mx-auto max-w-3xl text-center">
+          <app-section-heading eyebrow="Training ground" title="Select difficulty" [centered]="true" />
+          <div class="grid gap-4 sm:grid-cols-3">
+            @for (level of levels; track level.value) {
+              <app-choice-card [icon]="level.icon" [title]="level.label" [description]="level.detail" [selected]="difficulty() === level.value" (chosen)="difficulty.set(level.value)" />
+            }
           </div>
-        } @else if (state(); as current) {
-          <div class="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_18rem]">
-            <div class="mx-auto w-full max-w-[42rem]">
-              <app-board [state]="current" [legalMoves]="legalMoves()" [playerColor]="color()" [disabled]="busy() || current.turn !== color() || !!current.winner" (move)="play($event)" />
-            </div>
-            <aside class="game-card">
-              <p class="eyebrow">{{ difficulty() }} bot</p>
-              <h2 class="mt-2 text-2xl font-black text-emerald-950 dark:text-white">{{ gameStatus() }}</h2>
-              <p class="mt-3 text-sm font-semibold text-emerald-800/70 dark:text-emerald-100/70">The AI evaluates every move on the server. Captures are always mandatory.</p>
-              @if (error()) { <p class="mt-4 rounded-xl bg-red-100 p-3 text-sm font-bold text-red-800">{{ error() }}</p> }
-              <button class="soft-button mt-6 w-full" (click)="reset()">New game</button>
-            </aside>
+          <p class="mb-3 mt-7 font-black text-emerald-950 dark:text-white">Play as</p>
+          <div class="mx-auto mb-7 flex max-w-xs rounded-xl bg-emerald-100 p-1 dark:bg-emerald-950">
+            <app-button variant="tab" [active]="color() === 1" (pressed)="color.set(1)">Red &middot; First</app-button>
+            <app-button variant="tab" [active]="color() === 2" (pressed)="color.set(2)">Black</app-button>
           </div>
-        }
-      </section>
-    </main>
+          <app-button [loading]="busy()" (pressed)="start()">Start game</app-button>
+        </div>
+      } @else if (state(); as current) {
+        <div class="grid items-start gap-7 xl:grid-cols-[minmax(0,46rem)_19rem] xl:justify-center">
+          <div class="mx-auto w-full max-w-[46rem]">
+            <app-player-strip class="mb-3" avatar="AI" [label]="difficulty() + ' opponent'" name="GridKing Bot" />
+            <app-board [state]="current" [legalMoves]="legalMoves()" [playerColor]="color()" [disabled]="busy() || current.turn !== color() || !!current.winner" (move)="play($event)" />
+          </div>
+          <app-panel class="game-panel">
+            <p class="eyebrow">Game status</p>
+            <h2 class="mt-2 text-2xl font-black text-emerald-950 dark:text-white">{{ gameStatus() }}</h2>
+            <p class="mt-3 text-sm font-semibold text-emerald-800/70 dark:text-emerald-100/70">Captures are mandatory. Select a piece, then a highlighted square.</p>
+            <app-error-message [message]="error()" />
+            <app-button class="mt-6" variant="secondary" [fullWidth]="true" (pressed)="reset()">New game</app-button>
+          </app-panel>
+        </div>
+      }
+    </app-shell>
   `,
 })
 export class BotPage {
@@ -56,15 +59,15 @@ export class BotPage {
   readonly gameStatus = computed(() => {
     const state = this.state();
     if (state?.winner) return state.winner === this.color() ? 'You beat the bot!' : 'The bot wins';
-    return this.busy() ? 'Bot is thinking…' : 'Your move';
+    return this.busy() ? 'Bot is thinking...' : 'Your move';
   });
   readonly levels = [
-    { value: 'easy' as Difficulty, label: 'Easy', icon: '●', detail: 'Depth 2 · piece count' },
-    { value: 'medium' as Difficulty, label: 'Medium', icon: '◆', detail: 'Depth 4 · safe edges' },
-    { value: 'hard' as Difficulty, label: 'Hard', icon: '♛', detail: 'Depth 6 · promotion strategy' },
+    { value: 'easy' as Difficulty, label: 'Easy', icon: '&#9679;', detail: 'Depth 2 · piece count' },
+    { value: 'medium' as Difficulty, label: 'Medium', icon: '&#9670;', detail: 'Depth 4 · safe edges' },
+    { value: 'hard' as Difficulty, label: 'Hard', icon: '&#9819;', detail: 'Depth 6 · promotion strategy' },
   ];
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService, private readonly sounds: SoundService) {}
   async start(): Promise<void> {
     await this.run(() => this.api.post<GamePayload>('/api/bot/start', { difficulty: this.difficulty(), color: this.color() === 1 ? 'red' : 'black' }));
   }
@@ -77,6 +80,7 @@ export class BotPage {
     try {
       const payload = await request();
       this.state.set(payload.state); this.legalMoves.set(payload.legal_moves);
+      if (payload.state.winner) payload.state.winner === this.color() ? this.sounds.win() : this.sounds.lose();
     } catch (error) {
       this.error.set(error instanceof Error ? error.message : 'The bot game failed.');
     } finally { this.busy.set(false); }

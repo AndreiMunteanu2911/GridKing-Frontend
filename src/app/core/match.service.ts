@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { Color, GameState, Move, QueueMode, SocketEvent, UserProfile } from './models';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { SoundService } from './sound.service';
 
 @Injectable({ providedIn: 'root' })
 export class MatchService {
@@ -14,7 +15,7 @@ export class MatchService {
   readonly error = signal('');
   private socket?: WebSocket;
 
-  constructor(private readonly auth: AuthService, private readonly api: ApiService) {}
+  constructor(private readonly auth: AuthService, private readonly api: ApiService, private readonly sounds: SoundService) {}
 
   async connect(mode: QueueMode): Promise<void> {
     this.close();
@@ -55,11 +56,13 @@ export class MatchService {
       this.status.set('playing');
       this.color.set(event.color || null);
       this.opponent.set(event.opponent || null);
+      this.sounds.match();
     }
     if (event.state) this.state.set(event.state);
     if (event.legal_moves) this.legalMoves.set(event.legal_moves);
     if (event.type === 'game_over' || event.type === 'opponent_disconnected') {
       this.status.set('finished');
+      if (event.state?.winner) event.state.winner === this.color() ? this.sounds.win() : this.sounds.lose();
       window.setTimeout(() => void this.auth.refreshProfile().catch(() => undefined), 700);
     }
     if (event.type === 'error') this.error.set(event.message || 'An unexpected match error occurred.');
