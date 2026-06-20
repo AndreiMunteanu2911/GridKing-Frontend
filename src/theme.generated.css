@@ -1,0 +1,23 @@
+:root {
+  --gridking-background: #064E3B;
+  --gridking-primary: #047857;
+  --gridking-bright: #10B981;
+  --gridking-accent: #F59E0B;
+  --gridking-accent-dark: #D97706;
+  --gridking-accent-light: #FEF3C7;
+}
+
+@theme {
+  --color-emerald-950: #064E3B;
+  --color-emerald-900: #064E3B;
+  --color-emerald-800: #047857;
+  --color-emerald-700: #047857;
+  --color-emerald-600: #047857;
+  --color-emerald-500: #10B981;
+  --color-emerald-300: #10B981;
+  --color-yellow-500: #F59E0B;
+  --color-yellow-400: #F59E0B;
+  --color-yellow-300: #F59E0B;
+  --color-yellow-200: #FEF3C7;
+  --color-lime-200: #FEF3C7;
+}

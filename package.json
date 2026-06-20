@@ -1,0 +1,44 @@
+{
+  "name": "grid-king",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "node scripts/write-production-env.mjs development && ng serve",
+    "assets": "node scripts/generate-capacitor-assets.mjs",
+    "build": "npm run build:production",
+    "build:production": "node scripts/write-production-env.mjs && ng build --configuration production",
+    "cap:sync": "npm run build:production && cap sync android",
+    "watch": "node scripts/write-production-env.mjs development && ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "packageManager": "npm@11.6.1",
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/fire": "^20.0.1",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "firebase": "^12.15.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.16",
+    "@angular/cli": "^21.2.16",
+    "@angular/compiler-cli": "^21.2.0",
+    "@capacitor/cli": "^8.4.1",
+    "@tailwindcss/postcss": "^4.1.12",
+    "jsdom": "^28.0.0",
+    "postcss": "^8.5.3",
+    "prettier": "^3.8.1",
+    "sharp": "^0.35.2",
+    "tailwindcss": "^4.1.12",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.8"
+  }
+}
