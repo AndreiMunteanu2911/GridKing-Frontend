@@ -22,6 +22,19 @@ export interface UserProfile {
   wins: number;
 }
 
+export interface AuthUser {
+  uid: string;
+  email?: string;
+}
+
+export interface SessionPayload {
+  user: AuthUser;
+  profile?: UserProfile;
+  id_token: string;
+  refresh_token: string;
+  expires_in: string;
+}
+
 export interface GamePayload {
   state: GameState;
   legal_moves: Move[];

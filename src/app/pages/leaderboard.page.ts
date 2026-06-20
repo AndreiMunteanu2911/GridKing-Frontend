@@ -1,7 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import { ApiService } from '../core/api.service';
 import { AuthService } from '../core/auth.service';
-import { firestore } from '../core/firebase';
 import { UserProfile } from '../core/models';
 import { PageHeaderComponent } from '../shared/page-header.component';
 
@@ -37,13 +36,12 @@ export class LeaderboardPage implements OnInit {
   readonly players = signal<UserProfile[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
-  constructor(readonly auth: AuthService) {}
+  constructor(readonly auth: AuthService, private readonly api: ApiService) {}
   async ngOnInit(): Promise<void> {
     try {
-      const snapshot = await getDocs(query(collection(firestore, 'users'), orderBy('mmr', 'desc'), limit(50)));
-      this.players.set(snapshot.docs.map((doc) => doc.data() as UserProfile));
+      this.players.set(await this.api.get<UserProfile[]>('/api/leaderboard?limit=50'));
     } catch {
-      this.error.set('Could not load the leaderboard. Check Firestore read rules.');
+      this.error.set('Could not load the leaderboard. Check the backend connection.');
     } finally { this.loading.set(false); }
   }
 }

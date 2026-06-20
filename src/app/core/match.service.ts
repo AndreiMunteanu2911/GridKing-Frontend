@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { firebaseAuth } from './firebase';
+import { ApiService } from './api.service';
 import { Color, GameState, Move, QueueMode, SocketEvent, UserProfile } from './models';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
@@ -14,14 +14,13 @@ export class MatchService {
   readonly error = signal('');
   private socket?: WebSocket;
 
-  constructor(private readonly auth: AuthService) {}
+  constructor(private readonly auth: AuthService, private readonly api: ApiService) {}
 
   async connect(mode: QueueMode): Promise<void> {
     this.close();
     this.status.set('connecting');
     this.error.set('');
-    const token = await firebaseAuth.currentUser?.getIdToken();
-    if (!token) throw new Error('You must be signed in.');
+    const token = await this.api.getToken();
     this.socket = new WebSocket(`${environment.wsUrl}?token=${encodeURIComponent(token)}`);
     this.socket.onopen = () => this.send({ type: 'join_queue', mode });
     this.socket.onmessage = ({ data }) => this.handle(JSON.parse(data) as SocketEvent);

@@ -14,7 +14,7 @@ if (existsSync(localEnv)) {
   }
 }
 
-const required = ['GRIDKING_API_URL', 'GRIDKING_WS_URL', 'FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_PROJECT_ID', 'FIREBASE_STORAGE_BUCKET', 'FIREBASE_MESSAGING_SENDER_ID', 'FIREBASE_APP_ID'];
+const required = ['GRIDKING_API_URL', 'GRIDKING_WS_URL'];
 const missing = required.filter((name) => !process.env[name]?.trim());
 if (missing.length) throw new Error(`Missing environment variables: ${missing.join(', ')}`);
 if (mode === 'production' && !process.env.GRIDKING_API_URL.startsWith('https://')) throw new Error('GRIDKING_API_URL must use HTTPS in production.');
@@ -22,20 +22,11 @@ if (mode === 'production' && !process.env.GRIDKING_WS_URL.startsWith('wss://')) 
 
 const output = join(root, 'src', 'environments', `environment.${mode === 'production' ? 'production' : 'local'}.ts`);
 mkdirSync(dirname(output), { recursive: true });
-const value = (name) => JSON.stringify(process.env[name]);
 const url = (name) => JSON.stringify(process.env[name].replace(/\/+$/, ''));
 writeFileSync(output, `export const environment = {
   production: ${mode === 'production'},
   apiUrl: ${url('GRIDKING_API_URL')},
   wsUrl: ${url('GRIDKING_WS_URL')},
-  firebase: {
-    apiKey: ${value('FIREBASE_API_KEY')},
-    authDomain: ${value('FIREBASE_AUTH_DOMAIN')},
-    projectId: ${value('FIREBASE_PROJECT_ID')},
-    storageBucket: ${value('FIREBASE_STORAGE_BUCKET')},
-    messagingSenderId: ${value('FIREBASE_MESSAGING_SENDER_ID')},
-    appId: ${value('FIREBASE_APP_ID')},
-  },
 };
 `);
 console.log(`Wrote ${output}`);

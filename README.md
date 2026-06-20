@@ -44,20 +44,14 @@ The Go backend should be deployed first because the frontend and Android build n
 1. Create a Firebase project.
 2. In **Authentication → Sign-in method**, enable **Email/Password**.
 3. Create a Firestore database.
-4. In **Project settings → Your apps**, create a Web app and copy its configuration values.
+4. In **Project settings → Your apps**, create a Web app and copy only its Web API key into the backend as `FIREBASE_WEB_API_KEY`.
 5. Deploy the included Firestore rules:
 
 ```bash
 firebase deploy --only firestore:rules
 ```
 
-6. In **Authentication → Settings → Authorized domains**, add:
-
-- `localhost`
-- Your Vercel production domain
-- Any custom production domain
-
-Firebase web configuration is intentionally bundled into the browser. It identifies the Firebase project but does not grant administrator access. Never place a Firebase service-account JSON value in this frontend.
+The Angular application does not connect to Firebase directly. Authentication and all Firestore access go through the Go backend. Never place Firebase configuration or service-account JSON in this frontend.
 
 ## Environment File
 
@@ -80,12 +74,6 @@ Fill in:
 ```dotenv
 GRIDKING_API_URL=http://localhost:8080
 GRIDKING_WS_URL=ws://localhost:8080/ws
-FIREBASE_API_KEY=your-firebase-web-api-key
-FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
-FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
-FIREBASE_APP_ID=your-firebase-web-app-id
 ```
 
 `.env.local` is ignored by Git. The start and production build scripts convert these values into ignored Angular environment files.
@@ -167,12 +155,6 @@ In the frontend GitHub repository, open **Settings → Secrets and variables →
 ```text
 GRIDKING_API_URL
 GRIDKING_WS_URL
-FIREBASE_API_KEY
-FIREBASE_AUTH_DOMAIN
-FIREBASE_PROJECT_ID
-FIREBASE_STORAGE_BUCKET
-FIREBASE_MESSAGING_SENDER_ID
-FIREBASE_APP_ID
 ```
 
 Use the deployed Render URLs, for example:
@@ -182,7 +164,7 @@ GRIDKING_API_URL=https://gridking-backend.onrender.com
 GRIDKING_WS_URL=wss://gridking-backend.onrender.com/ws
 ```
 
-These are public browser configuration values, so GitHub repository variables are appropriate. The Firebase Admin service account belongs only in Render.
+These backend URLs are public browser configuration values, so GitHub repository variables are appropriate. Every Firebase value belongs only in Render.
 
 ## Deploy The Frontend To Vercel
 
@@ -197,9 +179,8 @@ These are public browser configuration values, so GitHub repository variables ar
 
 After Vercel assigns the production URL:
 
-1. Add its hostname to Firebase Authorized Domains.
-2. Set the backend `FRONTEND_ORIGIN` to the exact Vercel origin, such as `https://gridking.vercel.app`.
-3. Redeploy the backend if that value changed.
+1. Set the backend `FRONTEND_ORIGIN` to the exact Vercel origin, such as `https://gridking.vercel.app`.
+2. Redeploy the backend if that value changed.
 
 Vercel environment variables can also be managed with:
 
@@ -225,7 +206,7 @@ Use either Vercel or Firebase Hosting as the public frontend host. The backend C
 - Angular 21 standalone components
 - Angular Signals
 - Tailwind CSS 4
-- Firebase Web SDK
+- Backend-mediated Firebase Authentication
 - Capacitor 8
 - TypeScript 5.9
 - Sharp asset generation
@@ -247,10 +228,10 @@ vercel.json                   Vercel Angular deployment settings
 
 ## How Authentication Works
 
-Firebase signs the player in and returns an ID token. Protected HTTP requests send it as:
+The frontend sends registration and login requests to the Go backend. The backend authenticates against Firebase and returns short-lived ID and refresh tokens. Protected requests send the ID token as:
 
 ```text
 Authorization: Bearer <firebase-id-token>
 ```
 
-The browser WebSocket connection sends the short-lived token during connection setup. The Go backend verifies every token with Firebase Admin before allowing profile, bot, or multiplayer access.
+The browser stores only the refresh token needed to restore the session. It never receives Firebase project configuration or Admin credentials. The WebSocket sends a short-lived ID token during connection setup, and the Go backend verifies it before allowing matchmaking.
