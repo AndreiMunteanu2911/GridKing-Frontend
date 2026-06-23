@@ -48,7 +48,7 @@ export class AppShellComponent {
   readonly navItems = [
     { path: '/menu', label: 'Home', shortLabel: 'Home', icon: '&#8962;' },
     { path: '/online', label: 'Play online', shortLabel: 'Online', icon: '&#9876;' },
-    { path: '/bot', label: 'Play bot', shortLabel: 'Bot', icon: '&#9823;' },
+    { path: '/bot', label: 'Play against bots', shortLabel: 'Bots', icon: '&#9823;' },
     { path: '/leaderboard', label: 'Leaderboard', shortLabel: 'Ranks', icon: '&#9819;' },
     { path: '/settings', label: 'Settings', shortLabel: 'Settings', icon: '&#9881;' },
   ];

@@ -12,7 +12,7 @@ import { SectionHeadingComponent } from '../shared/section-heading.component';
       <app-section-heading eyebrow="Welcome back" [title]="auth.profile()?.visible_name || 'Player'" />
       <section class="dashboard-grid">
         <app-menu-tile route="/online" icon="&#9876;" title="Play Online" description="Casual or ranked matchmaking" />
-        <app-menu-tile route="/bot" icon="&#9823;" title="Play Bot" description="Practice against three AI levels" variant="yellow" />
+        <app-menu-tile route="/bot" icon="&#9823;" title="Play Against Bots" description="Practice against three AI levels" variant="yellow" />
         <app-menu-tile route="/leaderboard" icon="&#9819;" title="Leaderboard" description="Your stats and the global rankings" variant="cream" />
         <app-menu-tile route="/settings" icon="&#9881;" title="Settings" description="Theme and sound preferences" variant="dark" />
       </section>

@@ -15,7 +15,7 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
   selector: 'app-bot-page',
   imports: [BoardComponent, AppShellComponent, ButtonComponent, ChoiceCardComponent, PanelComponent, PlayerStripComponent, SectionHeadingComponent, ErrorMessageComponent],
   template: `
-    <app-shell title="Play Bot" subtitle="Practice tactics at your own pace">
+    <app-shell title="Play Against Bots" subtitle="Practice tactics at your own pace">
       @if (!state()) {
         <div class="setup-layout">
           <app-section-heading eyebrow="Training ground" title="Select difficulty" [centered]="true" />
