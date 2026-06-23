@@ -32,17 +32,19 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
           <app-button [loading]="busy()" (pressed)="start()">Start game</app-button>
         </div>
       } @else if (state(); as current) {
-        <div class="grid items-start gap-7 xl:grid-cols-[minmax(0,46rem)_19rem] xl:justify-center">
-          <div class="mx-auto w-full max-w-[46rem]">
+        <div class="game-layout">
+          <div class="game-board">
             <app-player-strip class="mb-3" avatar="AI" [label]="difficulty() + ' opponent'" name="GridKing Bot" />
             <app-board [state]="current" [legalMoves]="legalMoves()" [playerColor]="color()" [disabled]="busy() || current.turn !== color() || !!current.winner" (move)="play($event)" />
           </div>
-          <app-panel class="game-panel">
-            <p class="eyebrow">Game status</p>
-            <h2 class="mt-2 text-2xl font-black text-emerald-950 dark:text-white">{{ gameStatus() }}</h2>
-            <p class="mt-3 text-sm font-semibold text-emerald-800/70 dark:text-emerald-100/70">Captures are mandatory. Select a piece, then a highlighted square.</p>
+          <app-panel class="game-panel" [compact]="true">
+            <div class="game-panel-copy">
+              <p class="eyebrow">Game status</p>
+              <h2 class="font-black text-emerald-950 dark:text-white">{{ gameStatus() }}</h2>
+              <p class="font-semibold text-emerald-800/70 dark:text-emerald-100/70">Captures are mandatory. Select a piece, then a highlighted square.</p>
+            </div>
             <app-error-message [message]="error()" />
-            <app-button class="mt-6" variant="secondary" [fullWidth]="true" (pressed)="reset()">New game</app-button>
+            <app-button variant="secondary" (pressed)="reset()">New game</app-button>
           </app-panel>
         </div>
       }

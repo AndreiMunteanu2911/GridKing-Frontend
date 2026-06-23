@@ -31,18 +31,20 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
           <app-button class="mt-6" variant="secondary" (pressed)="match.close()">Cancel</app-button>
         </app-panel>
       } @else if (match.state(); as state) {
-        <div class="grid items-start gap-7 xl:grid-cols-[minmax(0,46rem)_19rem] xl:justify-center">
-          <div class="mx-auto w-full max-w-[46rem]">
+        <div class="game-layout">
+          <div class="game-board">
             <app-player-strip class="mb-3" [avatar]="(match.opponent()?.visible_name || 'O').charAt(0)" label="Opponent" [name]="match.opponent()?.visible_name || 'Opponent'" [rating]="match.opponent()?.mmr || 1200" />
             <app-board [state]="state" [legalMoves]="match.legalMoves()" [playerColor]="match.color() || 1" [disabled]="!isMyTurn() || match.status() === 'finished'" (move)="play($event)" />
           </div>
-          <app-panel class="game-panel">
-            <p class="eyebrow">Match status</p>
-            <h2 class="mt-2 text-2xl font-black text-emerald-950 dark:text-white">{{ statusText() }}</h2>
-            <p class="mt-3 text-sm font-semibold text-emerald-800/70 dark:text-emerald-100/70">{{ state.reason ? reasonText(state.reason) : 'Select a piece, then a highlighted square. Captures are mandatory.' }}</p>
+          <app-panel class="game-panel" [compact]="true">
+            <div class="game-panel-copy">
+              <p class="eyebrow">Match status</p>
+              <h2 class="font-black text-emerald-950 dark:text-white">{{ statusText() }}</h2>
+              <p class="font-semibold text-emerald-800/70 dark:text-emerald-100/70">{{ state.reason ? reasonText(state.reason) : 'Select a piece, then a highlighted square. Captures are mandatory.' }}</p>
+            </div>
             <app-error-message [message]="match.error()" />
-            @if (match.status() === 'finished') { <app-button class="mt-6" [fullWidth]="true" (pressed)="match.close()">Find another match</app-button> }
-            @else { <app-button class="mt-6" variant="danger" [fullWidth]="true" (pressed)="match.resign()">Resign match</app-button> }
+            @if (match.status() === 'finished') { <app-button (pressed)="match.close()">Find another match</app-button> }
+            @else { <app-button variant="danger" (pressed)="match.resign()">Resign match</app-button> }
           </app-panel>
         </div>
       }

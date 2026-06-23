@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, computed, input, output, signal } from '@angular/core';
 import { Color, GameState, Move } from '../core/models';
 import { SoundService } from '../core/sound.service';
 
@@ -11,6 +11,7 @@ import { SoundService } from '../core/sound.service';
           type="button"
           role="gridcell"
           class="board-square"
+          [attr.data-square]="index"
           [class.dark-square]="isDark(index)"
           [class.light-square]="!isDark(index)"
           [class.move-target]="nextTargets().includes(index)"
@@ -29,7 +30,7 @@ import { SoundService } from '../core/sound.service';
     </div>
   `,
 })
-export class BoardComponent {
+export class BoardComponent implements AfterViewChecked {
   readonly state = input.required<GameState>();
   readonly legalMoves = input<Move[]>([]);
   readonly playerColor = input<Color>(1);
@@ -49,7 +50,43 @@ export class BoardComponent {
       .filter((value): value is number => value !== undefined);
   });
 
-  constructor(private readonly sounds: SoundService) {}
+  private previousBoard: number[] | null = null;
+
+  constructor(private readonly sounds: SoundService, private readonly element: ElementRef<HTMLElement>) {}
+
+  ngAfterViewChecked(): void {
+    const board = this.state().board;
+    if (this.previousBoard?.every((piece, index) => piece === board[index])) return;
+
+    const previous = this.previousBoard;
+    this.previousBoard = [...board];
+    if (!previous) return;
+
+    const destination = board.findIndex((piece, index) => piece !== 0 && previous[index] === 0);
+    if (destination < 0) return;
+
+    const destinationColor = board[destination] % 2;
+    const source = previous.findIndex((piece, index) => piece !== 0 && board[index] === 0 && piece % 2 === destinationColor);
+    if (source < 0) return;
+
+    const displayedSquares = this.squares();
+    const from = displayedSquares.indexOf(source);
+    const to = displayedSquares.indexOf(destination);
+    const square = this.element.nativeElement.querySelector<HTMLElement>(`[data-square="${destination}"]`);
+    const piece = square?.querySelector<HTMLElement>('.piece');
+    if (!square || !piece) return;
+
+    const { width, height } = square.getBoundingClientRect();
+    const columnOffset = (from % 8) - (to % 8);
+    const rowOffset = Math.floor(from / 8) - Math.floor(to / 8);
+    piece.animate(
+      [
+        { transform: `translate(${columnOffset * width}px, ${rowOffset * height}px) scale(.96)` },
+        { transform: 'translate(0, 0) scale(1)' },
+      ],
+      { duration: 120, easing: 'cubic-bezier(.2, .85, .3, 1)' },
+    );
+  }
 
   select(index: number): void {
     const current = this.selectedPath();
