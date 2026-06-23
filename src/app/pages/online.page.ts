@@ -9,10 +9,13 @@ import { PanelComponent } from '../shared/panel.component';
 import { PlayerStripComponent } from '../shared/player-strip.component';
 import { SectionHeadingComponent } from '../shared/section-heading.component';
 import { ErrorMessageComponent } from '../shared/error-message.component';
+import { GameClockComponent } from '../shared/game-clock.component';
+import { MoveHistoryComponent } from '../shared/move-history.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-online-page',
-  imports: [AppShellComponent, BoardComponent, ButtonComponent, ChoiceCardComponent, PanelComponent, PlayerStripComponent, SectionHeadingComponent, ErrorMessageComponent],
+  imports: [AppShellComponent, BoardComponent, ButtonComponent, ChoiceCardComponent, PanelComponent, PlayerStripComponent, SectionHeadingComponent, ErrorMessageComponent, GameClockComponent, MoveHistoryComponent],
   template: `
     <app-shell title="Play Online" subtitle="Find an opponent and climb the rankings">
       @if (match.status() === 'idle') {
@@ -33,6 +36,10 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
       } @else if (match.state(); as state) {
         <div class="game-layout">
           <div class="game-board">
+            <div class="clock-row">
+              <app-game-clock label="Opponent" [milliseconds]="match.color() === 1 ? match.blackTimeMS() : match.redTimeMS()" [active]="!isMyTurn() && match.status() === 'playing'" />
+              <app-game-clock label="You" [milliseconds]="match.color() === 1 ? match.redTimeMS() : match.blackTimeMS()" [active]="isMyTurn() && match.status() === 'playing'" />
+            </div>
             <app-player-strip class="mb-3" [avatar]="(match.opponent()?.visible_name || 'O').charAt(0)" label="Opponent" [name]="match.opponent()?.visible_name || 'Opponent'" [rating]="match.opponent()?.mmr || 1200" />
             <app-board [state]="state" [legalMoves]="match.legalMoves()" [playerColor]="match.color() || 1" [disabled]="!isMyTurn() || match.status() === 'finished'" (move)="play($event)" />
           </div>
@@ -43,9 +50,17 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
               <p class="font-semibold text-emerald-800/70 dark:text-emerald-100/70">{{ state.reason ? reasonText(state.reason) : 'Select a piece, then a highlighted square. Captures are mandatory.' }}</p>
             </div>
             <app-error-message [message]="match.error()" />
-            @if (match.status() === 'finished') { <app-button (pressed)="match.close()">Find another match</app-button> }
+            @if (match.status() === 'finished') {
+              <div class="game-actions">
+                <app-button [disabled]="match.rematchState() === 'waiting'" (pressed)="match.requestRematch()">{{ match.rematchState() === 'requested' ? 'Accept rematch' : match.rematchState() === 'waiting' ? 'Waiting...' : 'Rematch' }}</app-button>
+                <app-button variant="ghost" (pressed)="viewAnalysis()">Analysis</app-button>
+                <app-button variant="secondary" (pressed)="match.close()">Find another</app-button>
+              </div>
+            }
             @else { <app-button variant="danger" (pressed)="match.resign()">Resign match</app-button> }
           </app-panel>
+          @if (match.notice()) { <p class="game-notice">{{ match.notice() }}</p> }
+          <app-move-history [history]="match.history()" />
         </div>
       }
     </app-shell>
@@ -59,9 +74,10 @@ export class OnlinePage implements OnDestroy {
     return this.isMyTurn() ? 'Your move' : 'Opponent thinking';
   });
 
-  constructor(readonly match: MatchService) {}
+  constructor(readonly match: MatchService, private readonly router: Router) {}
   queue(mode: QueueMode): void { this.match.connect(mode).catch((error) => this.match.error.set(error instanceof Error ? error.message : 'Connection failed.')); }
   play(move: Move): void { this.match.move(move); }
   reasonText(reason: string): string { return reason.replaceAll('_', ' '); }
-  ngOnDestroy(): void { this.match.close(); }
+  viewAnalysis(): void { window.setTimeout(() => void this.router.navigate(['/history'], { queryParams: { match: this.match.matchId() } }), 700); }
+  ngOnDestroy(): void { this.match.leaveQueue(); }
 }

@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/auth.service';
+import { MatchService } from '../core/match.service';
 
 @Component({
   selector: 'app-shell',
@@ -39,6 +40,13 @@ import { AuthService } from '../core/auth.service';
           </a>
         }
       </nav>
+      @if (matches.incomingInvite(); as invite) {
+        <aside class="global-invite" role="dialog" aria-live="assertive">
+          <strong>{{ invite.inviter.visible_name }} invited you</strong>
+          <small>{{ invite.ranked ? 'Ranked match · rating may change' : 'Casual match' }}</small>
+          <span><button type="button" (click)="matches.respondInvite(false)">Decline</button><button type="button" class="accept" (click)="matches.respondInvite(true)">Accept</button></span>
+        </aside>
+      }
     </div>
   `,
 })
@@ -53,5 +61,5 @@ export class AppShellComponent {
     { path: '/settings', label: 'Settings', shortLabel: 'Settings', icon: '&#9881;' },
   ];
 
-  constructor(readonly auth: AuthService) {}
+  constructor(readonly auth: AuthService, readonly matches: MatchService) {}
 }

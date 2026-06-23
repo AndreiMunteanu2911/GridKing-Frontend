@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ApiService } from '../core/api.service';
 import { AuthService } from '../core/auth.service';
-import { UserProfile } from '../core/models';
+import { Achievement, UserProfile } from '../core/models';
 import { AppShellComponent } from '../shared/app-shell.component';
 import { PanelComponent } from '../shared/panel.component';
 import { ScrollableContainerComponent } from '../shared/scrollable-container.component';
@@ -23,6 +23,8 @@ import { StatCardComponent } from '../shared/stat-card.component';
             <app-stat-card [value]="auth.profile()?.mmr" label="Rating" />
             <app-stat-card [value]="auth.profile()?.wins" label="Wins" />
             <app-stat-card [value]="auth.profile()?.matches_played" label="Games" />
+            <app-stat-card [value]="auth.profile()?.win_streak" label="Win streak" />
+            <app-stat-card [value]="auth.profile()?.puzzle_streak" label="Puzzle streak" />
           </div>
         </app-panel>
         <app-panel>
@@ -35,6 +37,15 @@ import { StatCardComponent } from '../shared/stat-card.component';
           </app-scrollable-container>
           <app-error-message [message]="error()" />
         </app-panel>
+        <app-panel class="achievements-panel">
+          <div class="leaderboard-header"><span><p class="eyebrow">Milestones</p><h2>Achievements</h2></span><span aria-hidden="true">&#9733;</span></div>
+          <div class="achievement-grid">
+            @for (achievement of achievements(); track achievement.id) {
+              <article class="achievement"><span>&#10003;</span><div><strong>{{ achievement.title }}</strong><small>{{ achievement.description }}</small></div></article>
+            }
+            @if (!achievements().length && !loading()) { <p class="empty-state">Play games and solve puzzles to unlock achievements.</p> }
+          </div>
+        </app-panel>
       </section>
     </app-shell>
   `,
@@ -43,10 +54,12 @@ export class LeaderboardPage implements OnInit {
   readonly players = signal<UserProfile[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
+  readonly achievements = signal<Achievement[]>([]);
   constructor(readonly auth: AuthService, private readonly api: ApiService) {}
   async ngOnInit(): Promise<void> {
     try {
-      this.players.set(await this.api.get<UserProfile[]>('/api/leaderboard?limit=50'));
+      const [players, achievements] = await Promise.all([this.api.get<UserProfile[]>('/api/leaderboard?limit=50'), this.api.get<Achievement[]>('/api/achievements')]);
+      this.players.set(players); this.achievements.set(achievements);
     } catch {
       this.error.set('Could not load the leaderboard. Check the backend connection.');
     } finally { this.loading.set(false); }

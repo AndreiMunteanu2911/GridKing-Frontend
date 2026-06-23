@@ -15,6 +15,9 @@ import { SectionHeadingComponent } from '../shared/section-heading.component';
         <app-menu-tile route="/bot" icon="&#9823;" title="Play Against Bots" description="Practice against three AI levels" variant="yellow" />
         <app-menu-tile route="/leaderboard" icon="&#9819;" title="Leaderboard" description="Your stats and the global rankings" variant="cream" />
         <app-menu-tile route="/settings" icon="&#9881;" title="Settings" description="Theme and sound preferences" variant="dark" />
+        <app-menu-tile route="/puzzles" icon="&#9672;" title="Daily Puzzle" description="Solve today's generated position" variant="yellow" />
+        <app-menu-tile route="/friends" icon="&#9822;" title="Friends" description="See who is online and invite them" />
+        <app-menu-tile route="/history" icon="&#8634;" title="Game History" description="Replay games and review analysis" variant="cream" />
       </section>
     </app-shell>
   `,

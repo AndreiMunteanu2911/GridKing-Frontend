@@ -28,6 +28,10 @@ export class ApiService {
     });
   }
 
+  async delete<T>(path: string): Promise<T> {
+    return this.request<T>(path, { method: 'DELETE' });
+  }
+
   setSession(session: SessionPayload): void {
     this.idToken = session.id_token;
     this.refreshToken = session.refresh_token;

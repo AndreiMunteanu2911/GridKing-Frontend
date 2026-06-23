@@ -8,6 +8,9 @@ export const routes: Routes = [
   { path: 'bot', canActivate: [authGuard], loadComponent: () => import('./pages/bot.page').then((m) => m.BotPage) },
   { path: 'settings', canActivate: [authGuard], loadComponent: () => import('./pages/settings.page').then((m) => m.SettingsPage) },
   { path: 'leaderboard', canActivate: [authGuard], loadComponent: () => import('./pages/leaderboard.page').then((m) => m.LeaderboardPage) },
+  { path: 'friends', canActivate: [authGuard], loadComponent: () => import('./pages/friends.page').then((m) => m.FriendsPage) },
+  { path: 'puzzles', canActivate: [authGuard], loadComponent: () => import('./pages/puzzles.page').then((m) => m.PuzzlesPage) },
+  { path: 'history', canActivate: [authGuard], loadComponent: () => import('./pages/history.page').then((m) => m.HistoryPage) },
   { path: '', pathMatch: 'full', redirectTo: 'menu' },
   { path: '**', redirectTo: 'menu' },
 ];
