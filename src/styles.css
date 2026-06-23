@@ -130,7 +130,7 @@ app-button.ui-button-host-tab { display: flex; flex: 1; }
 .queue-state p { margin: -.35rem 0 .35rem; color: var(--text-muted); font-size: .82rem; }
 .queue-spinner { width: 2rem; aspect-ratio: 1; border: 3px solid var(--line); border-top-color: var(--gridking-primary); border-radius: 50%; animation: ui-spin .7s linear infinite; }
 
-.game-layout { display: flex; width: min(100%, 44rem); margin-inline: auto; flex-direction: column; gap: .75rem; }
+.game-layout { display: flex; width: min(100%, 44rem, calc(100dvh - 17rem)); margin-inline: auto; flex-direction: column; gap: .75rem; }
 .game-board { width: 100%; min-width: 0; }
 .player-strip { display: flex; min-height: 3.25rem; align-items: center; gap: .65rem; margin-bottom: .55rem; border: 1px solid var(--line); border-radius: .45rem; padding: .45rem .55rem; color: var(--text); background: var(--surface-raised); }
 .player-copy { display: block; min-width: 0; flex: 1; }
@@ -235,6 +235,7 @@ app-button.ui-button-host-tab { display: flex; flex: 1; }
   .choice-card { min-height: 5rem; flex-direction: row; justify-content: flex-start; padding: .8rem; text-align: left; }
   .choice-card-icon { width: 2rem; }
   .choice-card small { margin-left: auto; }
+  .game-layout { width: min(100%, calc(100dvh - 18rem)); }
   .game-panel-copy > p:last-of-type { display: none; }
   .leaderboard-layout { grid-template-columns: 1fr; }
   .profile-card .ui-panel { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: .8rem; text-align: left; }
@@ -248,6 +249,17 @@ app-button.ui-button-host-tab { display: flex; flex: 1; }
   .auth-message > p:last-child { display: none; }
   .auth-board { width: 15rem; right: -6rem; bottom: -7rem; }
   .auth-form-side { min-height: auto; padding: 1rem; }
+}
+
+@media (max-width: 800px) and (max-height: 520px) {
+  .app-content { padding-bottom: 3.75rem; }
+  .topbar { min-height: 3.25rem; }
+  .page-content { padding: .5rem; }
+  .mobile-nav a { min-height: 3rem; }
+  .game-layout { width: min(100%, calc(100dvh - 13.5rem)); gap: .4rem; }
+  .player-strip { min-height: 2.65rem; margin-bottom: .35rem; padding-block: .3rem; }
+  .game-panel .ui-panel { min-height: 2.8rem; padding-block: .35rem; }
+  .game-panel-copy .eyebrow { display: none; }
 }
 
 @media (max-width: 460px) {
