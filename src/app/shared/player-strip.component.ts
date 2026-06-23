@@ -5,7 +5,7 @@ import { Component, input } from '@angular/core';
   template: `
     <div class="player-strip">
       <span class="profile-avatar">{{ avatar() }}</span>
-      <span class="min-w-0 flex-1"><small>{{ label() }}</small><strong>{{ name() }}</strong></span>
+      <span class="player-copy"><small>{{ label() }}</small><strong>{{ name() }}</strong></span>
       @if (rating() !== null) { <b>{{ rating() }}</b> }
     </div>
   `,

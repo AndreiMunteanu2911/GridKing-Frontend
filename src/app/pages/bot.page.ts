@@ -17,15 +17,15 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
   template: `
     <app-shell title="Play Bot" subtitle="Practice tactics at your own pace">
       @if (!state()) {
-        <div class="mx-auto max-w-3xl text-center">
+        <div class="setup-layout">
           <app-section-heading eyebrow="Training ground" title="Select difficulty" [centered]="true" />
-          <div class="grid gap-4 sm:grid-cols-3">
+          <div class="choice-grid choice-grid-three">
             @for (level of levels; track level.value) {
               <app-choice-card [icon]="level.icon" [title]="level.label" [description]="level.detail" [selected]="difficulty() === level.value" (chosen)="difficulty.set(level.value)" />
             }
           </div>
-          <p class="mb-3 mt-7 font-black text-emerald-950 dark:text-white">Play as</p>
-          <div class="mx-auto mb-7 flex max-w-xs rounded-xl bg-emerald-100 p-1 dark:bg-emerald-950">
+          <p class="play-as-label">Play as</p>
+          <div class="segmented-control color-selector">
             <app-button variant="tab" [active]="color() === 1" (pressed)="color.set(1)">Red &middot; First</app-button>
             <app-button variant="tab" [active]="color() === 2" (pressed)="color.set(2)">Black</app-button>
           </div>

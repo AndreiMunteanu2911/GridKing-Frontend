@@ -14,20 +14,20 @@ import { StatCardComponent } from '../shared/stat-card.component';
   imports: [AppShellComponent, PanelComponent, ScrollableContainerComponent, ErrorMessageComponent, RankingRowComponent, StatCardComponent],
   template: `
     <app-shell title="Leaderboard" subtitle="See how you stack up against the field">
-      <section class="grid gap-6 lg:grid-cols-[18rem_1fr]">
-        <app-panel class="text-center">
-          <div class="mx-auto grid h-20 w-20 place-items-center rounded-xl bg-yellow-300 text-4xl text-emerald-950 shadow-[inset_0_-4px_0_rgb(120_53_15_/_0.2)]">&#9819;</div>
-          <h2 class="mt-5 text-2xl font-black text-emerald-950 dark:text-white">{{ auth.profile()?.visible_name }}</h2>
-          <p class="font-bold text-emerald-700 dark:text-emerald-300">@{{ auth.profile()?.username }}</p>
-          <div class="mt-6 grid grid-cols-3 gap-2">
+      <section class="leaderboard-layout">
+        <app-panel class="profile-card">
+          <div class="profile-card-avatar">{{ (auth.profile()?.visible_name || 'P').charAt(0).toUpperCase() }}</div>
+          <h2>{{ auth.profile()?.visible_name }}</h2>
+          <p>@{{ auth.profile()?.username }}</p>
+          <div class="profile-stats">
             <app-stat-card [value]="auth.profile()?.mmr" label="Rating" />
             <app-stat-card [value]="auth.profile()?.wins" label="Wins" />
             <app-stat-card [value]="auth.profile()?.matches_played" label="Games" />
           </div>
         </app-panel>
         <app-panel>
-          <div class="mb-5 flex items-end justify-between"><span><p class="eyebrow">Global ranking</p><h2 class="text-2xl font-black text-emerald-950 dark:text-white">Top players</h2></span><span class="text-2xl">&#9819;</span></div>
-          @if (loading()) { <p class="py-10 text-center font-bold">Loading rankings...</p> }
+          <div class="leaderboard-header"><span><p class="eyebrow">Global ranking</p><h2>Top players</h2></span><span aria-hidden="true">&#9819;</span></div>
+          @if (loading()) { <p class="loading-state">Loading rankings...</p> }
           <app-scrollable-container maxHeight="36rem" role="list" ariaLabel="Global player rankings">
             @for (player of players(); track player.uid; let rank = $index) {
               <app-ranking-row [player]="player" [rank]="rank + 1" [current]="player.uid === auth.user()?.uid" />

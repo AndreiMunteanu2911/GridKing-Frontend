@@ -16,19 +16,19 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
   template: `
     <app-shell title="Play Online" subtitle="Find an opponent and climb the rankings">
       @if (match.status() === 'idle') {
-        <div class="mx-auto max-w-2xl text-center">
+        <div class="setup-layout setup-layout-narrow">
           <app-section-heading eyebrow="Choose your arena" title="Find your next rival" [centered]="true" />
-          <div class="grid gap-5 sm:grid-cols-2">
+          <div class="choice-grid">
             <app-choice-card icon="&#9673;" title="Casual" description="Relaxed matches with no rating changes" (chosen)="queue('casual')" />
             <app-choice-card icon="&#9819;" title="Ranked" description="Compete for your leaderboard position" [selected]="true" (chosen)="queue('ranked')" />
           </div>
         </div>
       } @else if (match.status() === 'connecting' || match.status() === 'queued') {
-        <app-panel class="mx-auto max-w-md text-center">
-          <div class="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-8 border-emerald-100 border-t-yellow-400"></div>
-          <h2 class="text-3xl font-black text-emerald-950 dark:text-white">Searching...</h2>
-          <p class="mt-2 font-semibold text-emerald-800/70 dark:text-emerald-100/70">Finding a worthy opponent</p>
-          <app-button class="mt-6" variant="secondary" (pressed)="match.close()">Cancel</app-button>
+        <app-panel class="queue-state">
+          <div class="queue-spinner"></div>
+          <h2>Searching...</h2>
+          <p>Finding a worthy opponent</p>
+          <app-button variant="secondary" (pressed)="match.close()">Cancel</app-button>
         </app-panel>
       } @else if (match.state(); as state) {
         <div class="game-layout">

@@ -13,8 +13,8 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
     <main class="auth-layout">
       <section class="auth-hero">
         <div class="brand auth-brand"><span class="brand-mark">K</span><span>GridKing</span></div>
-        <div>
-          <p class="eyebrow text-yellow-300">Online checkers</p>
+        <div class="auth-message">
+          <p class="eyebrow">Online checkers</p>
           <h1>Think ahead.<br><span>Own the board.</span></h1>
           <p>Fast matches, sharp tactics, and a global leaderboard. One crown at a time.</p>
         </div>
@@ -26,7 +26,7 @@ import { ErrorMessageComponent } from '../shared/error-message.component';
         <app-panel class="auth-card"><form (ngSubmit)="submit()">
           <p class="eyebrow">Welcome</p>
           <h2>{{ mode() === 'login' ? 'Log in to play' : 'Create your player' }}</h2>
-          <div class="my-6 flex rounded-xl bg-emerald-100 p-1 dark:bg-emerald-950">
+          <div class="segmented-control auth-tabs">
             <app-button variant="tab" [active]="mode() === 'login'" (pressed)="mode.set('login')">Log in</app-button>
             <app-button variant="tab" [active]="mode() === 'register'" (pressed)="mode.set('register')">Create account</app-button>
           </div>

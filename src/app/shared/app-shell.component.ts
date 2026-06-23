@@ -26,7 +26,7 @@ import { AuthService } from '../core/auth.service';
 
       <div class="app-content">
         <header class="topbar">
-          <div><p class="eyebrow">GridKing</p><h1>{{ title() }}</h1>@if (subtitle()) { <p class="topbar-subtitle">{{ subtitle() }}</p> }</div>
+          <div class="topbar-title"><p class="eyebrow">GridKing</p><h1>{{ title() }}</h1>@if (subtitle()) { <p class="topbar-subtitle">{{ subtitle() }}</p> }</div>
           <a routerLink="/leaderboard" class="rating-pill"><span>&#9670;</span> {{ auth.profile()?.mmr || 1200 }}</a>
         </header>
         <main class="page-content"><ng-content /></main>

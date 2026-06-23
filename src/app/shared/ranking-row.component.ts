@@ -6,8 +6,8 @@ import { UserProfile } from '../core/models';
   template: `
     <div class="rank-row" role="listitem" [class.current-player]="current()">
       <span class="rank-number">{{ rank() }}</span>
-      <span class="min-w-0 flex-1"><strong class="block truncate">{{ player().visible_name }}</strong><small class="text-emerald-700 dark:text-emerald-300">@{{ player().username }}</small></span>
-      <strong>{{ player().mmr }}</strong>
+      <span class="rank-player"><strong>{{ player().visible_name }}</strong><small>@{{ player().username }}</small></span>
+      <strong class="rank-rating">{{ player().mmr }}</strong>
     </div>
   `,
 })

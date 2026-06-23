@@ -8,7 +8,7 @@ export type MenuTileVariant = 'green' | 'yellow' | 'cream' | 'dark';
   imports: [RouterLink],
   template: `
     <a [routerLink]="route()" class="menu-tile" [class.menu-tile-green]="variant() === 'green'" [class.menu-tile-yellow]="variant() === 'yellow'" [class.menu-tile-cream]="variant() === 'cream'" [class.menu-tile-dark]="variant() === 'dark'">
-      <span class="tile-icon" [innerHTML]="icon()"></span><span><strong>{{ title() }}</strong><small>{{ description() }}</small></span><b>&rarr;</b>
+      <span class="tile-icon" [innerHTML]="icon()"></span><span class="tile-copy"><strong>{{ title() }}</strong><small>{{ description() }}</small></span><b aria-hidden="true">&rarr;</b>
     </a>
   `,
 })

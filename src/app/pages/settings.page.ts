@@ -13,13 +13,13 @@ import { SettingToggleComponent } from '../shared/setting-toggle.component';
   imports: [AppShellComponent, ButtonComponent, PanelComponent, SettingToggleComponent],
   template: `
     <app-shell title="Settings" subtitle="Make GridKing feel right on this device">
-      <section class="max-w-2xl">
-        <app-panel><div class="space-y-4">
+      <section class="settings-layout">
+        <app-panel><div class="settings-list">
           <app-setting-toggle title="Dark mode" description="Use a deeper nighttime palette" [enabled]="settings.darkMode()" (toggled)="settings.darkMode.update(value => !value)" />
           <app-setting-toggle title="Game sounds" description="Moves, matchmaking, and result effects" [enabled]="!settings.muted()" (toggled)="toggleSound()" />
         </div></app-panel>
-        <p class="mt-4 text-sm font-semibold text-emerald-800/60 dark:text-emerald-100/60">Preferences are saved on this device. Enabling sound plays a short preview.</p>
-        <app-button class="mt-8" variant="danger" (pressed)="logout()">Log out</app-button>
+        <p class="settings-note">Preferences are saved on this device. Enabling sound plays a short preview.</p>
+        <app-button variant="danger" (pressed)="logout()">Log out</app-button>
       </section>
     </app-shell>
   `,
