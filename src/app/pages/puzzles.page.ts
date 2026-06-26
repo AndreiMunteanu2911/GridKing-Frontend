@@ -14,16 +14,16 @@ import { PanelComponent } from '../shared/panel.component';
     <app-shell title="Daily Puzzle" subtitle="One fresh tactical position every day">
       @if (puzzle(); as current) {
         <div class="puzzle-layout">
-          <div class="game-board"><app-board [state]="current.state" [legalMoves]="current.legal_moves" [playerColor]="current.state.turn" [disabled]="solved()" (move)="solve($event)" /></div>
           <app-panel class="puzzle-panel">
-            <p class="eyebrow">{{ current.date }} · {{ current.difficulty }}</p>
+            <p class="eyebrow">{{ current.date }} - {{ current.difficulty }}</p>
             <h2>{{ solved() ? 'Puzzle complete' : 'Find the best move' }}</h2>
             <p>{{ solved() ? 'Come back tomorrow for a new position.' : 'Captures are mandatory. You can try as many times as needed.' }}</p>
             <div class="puzzle-streak"><strong>{{ auth.profile()?.puzzle_streak || 0 }}</strong><small>day streak</small></div>
             @if (feedback()) { <p class="puzzle-feedback" [class.correct]="solved()">{{ feedback() }}</p> }
           </app-panel>
+          <div class="game-board"><app-board [state]="current.state" [legalMoves]="current.legal_moves" [playerColor]="current.state.turn" [disabled]="solved()" (move)="solve($event)" /></div>
         </div>
-      } @else if (loading()) { <p class="loading-state">Preparing today’s puzzle...</p> }
+      } @else if (loading()) { <p class="loading-state">Preparing today's puzzle...</p> }
       <app-error-message [message]="error()" />
     </app-shell>
   `,
@@ -40,7 +40,7 @@ export class PuzzlesPage implements OnInit {
     const puzzle = this.puzzle(); if (!puzzle) return;
     try {
       const result = await this.api.post<{ correct: boolean }>(`/api/puzzles/${encodeURIComponent(puzzle.id)}/complete`, { move });
-      if (result.correct) { this.puzzle.set({ ...puzzle, completed: true }); this.feedback.set('Correct — excellent move.'); await this.auth.refreshProfile(); }
+      if (result.correct) { this.puzzle.set({ ...puzzle, completed: true }); this.feedback.set('Correct - excellent move.'); await this.auth.refreshProfile(); }
       else this.feedback.set('That move is legal, but there is a stronger continuation. Try again.');
     } catch (error) { this.error.set(error instanceof Error ? error.message : 'Could not check the move.'); }
   }

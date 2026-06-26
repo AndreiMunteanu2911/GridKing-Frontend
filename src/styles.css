@@ -130,7 +130,7 @@ app-button.ui-button-host-tab { display: flex; flex: 1; }
 .queue-state p { margin: -.35rem 0 .35rem; color: var(--text-muted); font-size: .82rem; }
 .queue-spinner { width: 2rem; aspect-ratio: 1; border: 3px solid var(--line); border-top-color: var(--gridking-primary); border-radius: 50%; animation: ui-spin .7s linear infinite; }
 
-.game-layout { display: flex; width: min(100%, 44rem, calc(100dvh - 20rem)); margin-inline: auto; flex-direction: column; gap: .75rem; }
+.game-layout { display: flex; width: min(100%, 46rem, calc(100dvh - 17rem)); margin-inline: auto; flex-direction: column; gap: .6rem; }
 .game-board { width: 100%; min-width: 0; }
 .player-strip { display: flex; min-height: 3.25rem; align-items: center; gap: .65rem; margin-bottom: .55rem; border: 1px solid var(--line); border-radius: .45rem; padding: .45rem .55rem; color: var(--text); background: var(--surface-raised); }
 .player-copy { display: block; min-width: 0; flex: 1; }
@@ -263,13 +263,17 @@ app-button.ui-button-host-tab { display: flex; flex: 1; }
 .request-row > span:last-child { display: flex; gap: .2rem; }
 .request-row .ui-button, .search-results .ui-button { min-height: 2rem; padding: .35rem .5rem; font-size: .64rem; }
 
-.puzzle-layout { display: grid; grid-template-columns: minmax(0, min(100%, 40rem, calc(100dvh - 10rem))) minmax(15rem, 20rem); gap: 1rem; align-items: start; justify-content: center; }
-.puzzle-panel h2 { margin: .35rem 0; color: var(--text); font-size: 1.25rem; font-weight: 800; }
-.puzzle-panel p { color: var(--text-muted); font-size: .76rem; }
-.puzzle-streak { display: flex; align-items: baseline; gap: .35rem; margin-top: 1.25rem; border-top: 1px solid var(--line); padding-top: 1rem; }
-.puzzle-streak strong { color: var(--gridking-primary); font-size: 1.8rem; }
+.puzzle-layout { display: flex; width: 100%; min-height: calc(100dvh - 8.5rem); flex-direction: column; align-items: center; gap: .65rem; }
+.puzzle-layout > .game-board { width: min(100%, 44rem, calc(100dvh - 15rem)); }
+.puzzle-panel { width: min(100%, 44rem); }
+.puzzle-panel .ui-panel { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 1rem; padding: .7rem .85rem; }
+.puzzle-panel .eyebrow, .puzzle-panel h2, .puzzle-panel p { grid-column: 1; }
+.puzzle-panel h2 { margin: .15rem 0; color: var(--text); font-size: 1rem; font-weight: 800; }
+.puzzle-panel p { margin: 0; color: var(--text-muted); font-size: .7rem; }
+.puzzle-streak { grid-column: 2; grid-row: 1 / 4; display: flex; align-items: baseline; gap: .35rem; margin-top: 0; border-left: 1px solid var(--line); padding-left: 1rem; }
+.puzzle-streak strong { color: var(--gridking-primary); font-size: 1.45rem; }
 .puzzle-streak small { color: var(--text-muted); }
-.puzzle-feedback { border-radius: .35rem; padding: .6rem; background: var(--surface-muted); }
+.puzzle-feedback { grid-column: 1 / -1; margin-top: .55rem; border-radius: .35rem; padding: .5rem .6rem; background: var(--surface-muted); }
 .puzzle-feedback.correct { color: var(--gridking-primary); background: #ecfdf5; }
 
 .history-list { display: grid; gap: .45rem; max-width: 48rem; }
@@ -335,11 +339,13 @@ app-button.ui-button-host-tab { display: flex; flex: 1; }
   .choice-card { min-height: 5rem; flex-direction: row; justify-content: flex-start; padding: .8rem; text-align: left; }
   .choice-card-icon { width: 2rem; }
   .choice-card small { margin-left: auto; }
-  .game-layout { width: min(100%, calc(100dvh - 21rem)); }
+  .game-layout { width: min(100%, calc(100dvh - 17.5rem)); }
   .game-panel-copy > p:last-of-type { display: none; }
   .leaderboard-layout { grid-template-columns: 1fr; }
-  .friends-layout, .puzzle-layout, .replay-layout { grid-template-columns: 1fr; }
-  .puzzle-layout > .game-board, .replay-board { width: min(100%, calc(100dvh - 9rem)); margin-inline: auto; }
+  .friends-layout, .replay-layout { grid-template-columns: 1fr; }
+  .puzzle-layout { min-height: calc(100dvh - 8rem); }
+  .puzzle-layout > .game-board { width: min(100%, calc(100dvh - 14rem)); margin-inline: auto; }
+  .replay-board { width: min(100%, calc(100dvh - 9rem)); margin-inline: auto; }
   .friend-actions { flex-wrap: wrap; justify-content: end; }
   .move-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .global-invite { right: .6rem; bottom: 4.2rem; }
@@ -361,7 +367,7 @@ app-button.ui-button-host-tab { display: flex; flex: 1; }
   .topbar { min-height: 3.25rem; }
   .page-content { padding: .5rem; }
   .mobile-nav a { min-height: 3rem; }
-  .game-layout { width: min(100%, calc(100dvh - 16.5rem)); gap: .4rem; }
+  .game-layout { width: min(100%, calc(100dvh - 14rem)); gap: .4rem; }
   .player-strip { min-height: 2.65rem; margin-bottom: .35rem; padding-block: .3rem; }
   .game-panel .ui-panel { min-height: 2.8rem; padding-block: .35rem; }
   .game-panel-copy .eyebrow { display: none; }
@@ -373,6 +379,8 @@ app-button.ui-button-host-tab { display: flex; flex: 1; }
   .game-panel .ui-panel { gap: .5rem; }
   .game-panel .ui-button { min-height: 2.35rem; padding-inline: .7rem; }
   .game-actions { width: 100%; }
+  .puzzle-panel .ui-panel { grid-template-columns: 1fr; }
+  .puzzle-streak { grid-column: 1; grid-row: auto; margin-top: .55rem; border-top: 1px solid var(--line); border-left: 0; padding-top: .55rem; padding-left: 0; }
   .personality-selector { display: grid; grid-template-columns: repeat(2, 1fr); }
   .move-list, .achievement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .friend-row { align-items: flex-start; flex-wrap: wrap; }
